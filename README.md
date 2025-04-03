@@ -41,7 +41,7 @@ By 2025.04.03
 SW 分数的计算方式如下：  
 先计算单样本误差比ER：  
 $$  
-ER_{i}=\frac{\left | y_{i} -y_{i}^{'}  \right | }{y_{i}^{'}}   
+![](http://latex.codecogs.com/gif.latex?ER_{i}=\frac{\left | y_{i} -y_{i}^{'}  \right | }{y_{i}^{'}}   
 $$  
 ER在5%内得100分；在20%外得0分；区间内线性下降。  
 完毕。  
