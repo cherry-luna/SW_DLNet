@@ -42,11 +42,7 @@ SW 分数的计算方式如下：
 先计算单样本误差比ER：  
 $$ER_{i}=\frac{\left | y_{i} -y_{i}^{'}  \right | }{y_{i}^{'}}$$  
 ER在5%内得100分；在20%外得0分；区间内线性下降。折算公式如下：  
-$$S W \_ \text {score }_{i}=\left\{\begin{array}{ll}
-100 & E R_{i} \leq 0.05 \\
-100-\frac{E R_{i}-0.05}{0.15} \times 100 & 0.05<E R_{i} \leq 0.2 \\
-0 & E R_{i}>0.2
-\end{array}\right.$$
+$$S W \_ \text {score }_{i}=\left\{\begin{array}{ll}100 & E R_{i} \leq 0.05 \\100-\frac{E R_{i}-0.05}{0.15} \times 100 & 0.05<E R_{i} \leq 0.2 \\0 & E R_{i}>0.2\end{array}\right.$$
 完毕。  
 ***********************    
   
