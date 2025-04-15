@@ -12,6 +12,21 @@ By 2025.04.02
 不是哥们，怎么我上传的没认出来是我？坏了，真是那我问我了…………  
 什么？这些文件是干嘛用的？简单，英文名对应代码的主要内容。  
 
+***********************   
+HybridModel_SW
+├── main.py
+├── draw.py
+├── DatasetManager.py
+├── SignalDataset.py
+├── model_arch.py
+├── trainer.py
+├── MAPE_Loss_func.py
+├── IQPhase.py
+├── random_seed.py
+├── optim_criter_sched_factory.py
+├── sw_scores.py
+├── requirements.txt  
+***********************   
 总的来说，该项目依靠 SignalDataset.py 和 DatasetManager.py 制作h5本地化数据集，并保存训练集、验证集与测试集（已设置622比例）索引文件；MAPE_Loss_func.py规定MAPE LOSS函数；IQPhase.py进行IQ相位校正；optim_criter_sched_factory.py设置一些常用的优化器、调节器和判别函数；其余的应该不需要说了。  
 
 这个复合网络思路是：Resnet多尺度时域特征提取 + 时频域与统计特征融合 + Transformer回归预测。  
