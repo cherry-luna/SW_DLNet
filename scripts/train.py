@@ -1,4 +1,5 @@
 """Train the symbol-width regressor end to end."""
+
 from __future__ import annotations
 
 import argparse
@@ -24,8 +25,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=None, help="Batch size")
     parser.add_argument("--seed", type=int, default=None, help="Random seed")
     parser.add_argument("--device", type=str, default=None, help="cuda or cpu")
-    parser.add_argument("--test-only", action="store_true", help="Skip training and run the test split")
-    parser.add_argument("--weights", type=str, default=None, help="Checkpoint used with --test-only")
+    parser.add_argument(
+        "--test-only", action="store_true", help="Skip training and run the test split"
+    )
+    parser.add_argument(
+        "--weights", type=str, default=None, help="Checkpoint used with --test-only"
+    )
     return parser.parse_args()
 
 
@@ -44,9 +49,7 @@ def main() -> None:
         config["device"] = args.device
 
     set_seed(config["seed"])
-    device = torch.device(
-        config["device"] if torch.cuda.is_available() else "cpu"
-    )
+    device = torch.device(config["device"] if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
     manager = DatasetManager(
@@ -90,9 +93,7 @@ def main() -> None:
         batch_size=batch_size,
     )
 
-    curve_path = os.path.join(
-        config["output"]["figures"], f"loss_curve_{batch_size}.png"
-    )
+    curve_path = os.path.join(config["output"]["figures"], f"loss_curve_{batch_size}.png")
     trainer.fit(checkpoint_path, curve_path, curve_prefix=str(batch_size))
 
     model.load_state_dict(

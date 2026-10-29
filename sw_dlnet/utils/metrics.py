@@ -1,4 +1,5 @@
 """Competition metric and regression scores."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -16,9 +17,7 @@ def compute_sw_score(y_true: float, y_pred: float) -> float:
 
 def sw_scores(y_true, y_pred) -> np.ndarray:
     """Per-sample scores for two equally shaped arrays."""
-    return np.array(
-        [compute_sw_score(t, p) for t, p in zip(y_true, y_pred)], dtype=np.float64
-    )
+    return np.array([compute_sw_score(t, p) for t, p in zip(y_true, y_pred)], dtype=np.float64)
 
 
 def evaluate_sw_score(y_true, y_pred) -> float:

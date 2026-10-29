@@ -1,4 +1,5 @@
 """The hybrid multi-scale ResNet + Transformer regression model."""
+
 from __future__ import annotations
 
 import torch
@@ -47,9 +48,7 @@ class HybridModel(nn.Module):
             SEBlock(512),
         )
 
-        self.transformer = PositionAwareTransformer(
-            feat_dim=512, num_heads=8, num_layers=12
-        )
+        self.transformer = PositionAwareTransformer(feat_dim=512, num_heads=8, num_layers=12)
         self.regressor = ImprovedRegressor(512)
 
         self._init_weights()
@@ -59,13 +58,9 @@ class HybridModel(nn.Module):
         """Kaiming initialisation, as used by the original release."""
         for module in self.modules():
             if isinstance(module, nn.Conv1d):
-                nn.init.kaiming_normal_(
-                    module.weight, mode="fan_out", nonlinearity="relu"
-                )
+                nn.init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="relu")
             elif isinstance(module, nn.Linear):
-                nn.init.kaiming_normal_(
-                    module.weight, mode="fan_in", nonlinearity="leaky_relu"
-                )
+                nn.init.kaiming_normal_(module.weight, mode="fan_in", nonlinearity="leaky_relu")
                 if module.bias is not None:
                     nn.init.constant_(module.bias, 0.01)
 

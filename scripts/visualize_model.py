@@ -1,4 +1,5 @@
 """Print a layer-by-layer summary of the hybrid model."""
+
 from __future__ import annotations
 
 import sys

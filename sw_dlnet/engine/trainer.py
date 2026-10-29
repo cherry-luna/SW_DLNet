@@ -1,4 +1,5 @@
 """Training and evaluation loops."""
+
 from __future__ import annotations
 
 import json
@@ -35,9 +36,7 @@ class Trainer:
         self.batch_size = batch_size
         self.use_amp = use_amp and device.type == "cuda"
 
-        self.train_loader, self.val_loader, self.test_loader = (
-            dataset_manager.get_dataloaders()
-        )
+        self.train_loader, self.val_loader, self.test_loader = dataset_manager.get_dataloaders()
         self.stage_configs = stages
         self.history: dict[str, Any] = {"stages": []}
         self.best_sw_score = -math.inf
@@ -192,9 +191,7 @@ class Trainer:
                 stage["current_epoch"] = epoch + 1
                 epoch_loss = 0.0
 
-                inner = tqdm(
-                    self.train_loader, desc=stage["name"], position=1, leave=False
-                )
+                inner = tqdm(self.train_loader, desc=stage["name"], position=1, leave=False)
                 for batch in inner:
                     loss = self.train_step(stage_idx, batch)
                     epoch_loss += loss
@@ -241,9 +238,7 @@ class Trainer:
                     outer.update(epochs - (epoch + 1))
                     break
 
-            plot_loss_curve(
-                train_losses, val_losses, curve_path, prefix=curve_prefix
-            )
+            plot_loss_curve(train_losses, val_losses, curve_path, prefix=curve_prefix)
 
         outer.close()
         print(f"Training finished. Best SW score: {self.best_sw_score:.4f}")

@@ -1,4 +1,5 @@
 """Building blocks of the hybrid ResNet-Transformer model."""
+
 from __future__ import annotations
 
 import torch

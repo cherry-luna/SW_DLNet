@@ -1,4 +1,5 @@
 """Dataset loading, splitting and batching."""
+
 from __future__ import annotations
 
 import os
@@ -97,9 +98,7 @@ class DatasetManager:
             iq_group = handle["iq"]
             sym_group = handle["symbol"]
             for i in range(len(iq_group) // 2):
-                dataset.signal_data.append(
-                    (iq_group[f"{i}_i"][:], iq_group[f"{i}_q"][:])
-                )
+                dataset.signal_data.append((iq_group[f"{i}_i"][:], iq_group[f"{i}_q"][:]))
                 dataset.symbol_seq.append(sym_group[str(i)][:])
 
             dataset.modulation_type = handle["mod_type"][:]
@@ -180,9 +179,7 @@ class DatasetManager:
         max_seq_len = max(seq_lens)
 
         batch_iq = torch.zeros((len(batch), 2, max_data_len), dtype=torch.float32)
-        batch_symbol = torch.full(
-            (len(batch), max_seq_len), PAD_TOKEN, dtype=torch.long
-        )
+        batch_symbol = torch.full((len(batch), max_seq_len), PAD_TOKEN, dtype=torch.long)
         mod_types, widths = [], []
 
         for i, item in enumerate(batch):
@@ -235,13 +232,16 @@ class DatasetManager:
 
         mean_i, mean_q = sum_i / total_points, sum_q / total_points
         self.mean = np.array([mean_i, mean_q], dtype=np.float32)
-        self.std = np.array(
-            [
-                np.sqrt(sum_sq_i / total_points - mean_i**2),
-                np.sqrt(sum_sq_q / total_points - mean_q**2),
-            ],
-            dtype=np.float32,
-        ) + 1e-8
+        self.std = (
+            np.array(
+                [
+                    np.sqrt(sum_sq_i / total_points - mean_i**2),
+                    np.sqrt(sum_sq_q / total_points - mean_q**2),
+                ],
+                dtype=np.float32,
+            )
+            + 1e-8
+        )
 
         os.makedirs(os.path.dirname(self.stats_path) or ".", exist_ok=True)
         with open(self.stats_path, "wb") as handle:

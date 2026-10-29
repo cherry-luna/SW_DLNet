@@ -1,4 +1,5 @@
 """Matplotlib helpers for training curves and test reports."""
+
 from __future__ import annotations
 
 import os
@@ -70,9 +71,7 @@ def plot_report(
     )
     low, high = float(targets.min()), float(targets.max())
     ax.plot([low, high], [low, high], "r--", label="Ideal Prediction")
-    ax.set_title(
-        _title("Predicted vs Actual Values (coloured by SW score)", prefix)
-    )
+    ax.set_title(_title("Predicted vs Actual Values (coloured by SW score)", prefix))
     ax.set_xlabel("Actual Values")
     ax.set_ylabel("Predicted Values")
     ax.legend()

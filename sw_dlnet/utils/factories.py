@@ -1,4 +1,5 @@
 """Optimizer, scheduler and criterion factories."""
+
 from __future__ import annotations
 
 import torch
