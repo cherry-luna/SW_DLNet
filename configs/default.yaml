@@ -1,0 +1,62 @@
+# Training configuration for the symbol-width regression model.
+# Paths are resolved relative to the repository root.
+
+seed: 42
+device: cuda            # cuda / cpu
+batch_size: 128
+
+data:
+  root: data/raw
+  cache: data/processed/dataset.h5
+  indices: data/processed/train_val_test_indices.pkl
+  stats: data/processed/dataset_stats_v3.pkl
+
+output:
+  weights: outputs/weights
+  figures: outputs/figures
+  reports: outputs/reports
+
+# Sequential fine-tuning schedule. Early stopping is evaluated per stage.
+stages:
+  - name: Warmup
+    epochs: 50
+    early_stop: 10
+    optimizer:
+      type: RAdam
+      lr: 1.0e-4
+      weight_decay: 1.0e-4
+    scheduler:
+      type: onecycle
+      max_lr: 1.0e-3
+      total_steps_epochs: 100
+    criterion:
+      type: mape
+
+  - name: FineTune
+    epochs: 50
+    early_stop: 10
+    optimizer:
+      type: SGD
+      lr: 5.0e-5
+      momentum: 0.9
+      weight_decay: 5.0e-5
+    scheduler:
+      type: plateau
+      factor: 0.5
+      patience: 8
+    criterion:
+      type: mape
+
+  - name: Convergence
+    epochs: 100
+    early_stop: 15
+    optimizer:
+      type: AdamW
+      lr: 5.0e-6
+      weight_decay: 5.0e-5
+    scheduler:
+      type: cosine
+      T_max: 100
+      eta_min: 1.0e-6
+    criterion:
+      type: mape
