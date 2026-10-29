@@ -7,6 +7,7 @@
 ![Task](https://img.shields.io/badge/Task-Symbol%20Width%20Regression-6f42c1)
 ![SW%20Score](https://img.shields.io/badge/SW%20Score-91.75-success)
 [![CI](https://github.com/moriruruka/SW_DLNet/actions/workflows/ci.yml/badge.svg)](https://github.com/moriruruka/SW_DLNet/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/moriruruka/SW_DLNet)](https://github.com/moriruruka/SW_DLNet/releases)
 
 本项目是 [DataCastle 码元宽度回归赛题](https://challenge.datacastle.cn/v3/cmptDetail.html?id=988)
 的完整实现：输入一段 20 MHz 采样的 I/Q 信号，输出该信号的码元宽度（symbol width）。
