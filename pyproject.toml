@@ -1,0 +1,53 @@
+# Packaging, lint and test configuration.
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sw-dlnet"
+version = "1.0.0"
+description = "Multi-scale ResNet + Transformer regressor for symbol-width estimation from I/Q signals"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Aria_Luna_007" }]
+keywords = ["signal-processing", "symbol-width", "deep-learning", "pytorch", "resnet", "transformer"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.24",
+  "torch>=2.1",
+  "h5py>=3.8",
+  "PyYAML>=6.0",
+  "scikit-learn>=1.3",
+  "matplotlib>=3.7",
+  "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff==0.12.0"]
+
+[project.urls]
+Homepage = "https://github.com/moriruruka/SW_DLNet"
+Issues = "https://github.com/moriruruka/SW_DLNet/issues"
+
+[tool.setuptools.packages.find]
+include = ["sw_dlnet*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = ["data/sample"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+markers = [
+  "slow: end-to-end tests that build the model and run a few training steps",
+]

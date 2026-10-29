@@ -2,10 +2,11 @@
 
 **基于多尺度 ResNet + Transformer 的通信信号码元宽度回归**
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.1%2B-EE4C2C?logo=pytorch&logoColor=white)
 ![Task](https://img.shields.io/badge/Task-Symbol%20Width%20Regression-6f42c1)
 ![SW%20Score](https://img.shields.io/badge/SW%20Score-91.75-success)
+[![CI](https://github.com/moriruruka/SW_DLNet/actions/workflows/ci.yml/badge.svg)](https://github.com/moriruruka/SW_DLNet/actions/workflows/ci.yml)
 
 本项目是 [DataCastle 码元宽度回归赛题](https://challenge.datacastle.cn/v3/cmptDetail.html?id=988)
 的完整实现：输入一段 20 MHz 采样的 I/Q 信号，输出该信号的码元宽度（symbol width）。
@@ -21,10 +22,12 @@ Convergence 三阶段串行策略，并在每阶段独立早停。
 - [实验结果](#实验结果)
 - [模型架构](#模型架构)
 - [快速开始](#快速开始)
+- [测试](#测试)
 - [数据准备](#数据准备)
 - [训练配置](#训练配置)
 - [输出产物](#输出产物)
 - [评价指标](#评价指标)
+- [持续集成与发布](#持续集成与发布)
 - [项目结构](#项目结构)
 - [文档](#文档)
 
@@ -152,6 +155,22 @@ python scripts/visualize_model.py
 | `--test-only` | 跳过训练，直接评估 |
 | `--weights` | 配合 `--test-only` 指定 checkpoint |
 
+## 测试
+
+仓库自带 30 个真实 CSV（每类调制 3 个，见 `data/sample/`），因此测试不依赖
+完整数据集，也不需要联网：
+
+```bash
+pip install -e ".[dev]"   # 安装 pytest 与 ruff
+pytest -q                 # 54 项测试，CPU 上约 15 秒
+pytest -m "not slow" -q   # 只跑单元测试，约 3 秒
+ruff check .              # 风格检查
+```
+
+覆盖范围包括数据解析与相位校正、60/20/20 划分、HDF5 缓存、模型结构与参数量、
+SW Score 分段函数、优化器 / 调度器工厂，以及一次完整的两轮训练 + 评估 + 产物落盘。
+测试数据、标记约定与 CI 任务见 [docs/testing.md](docs/testing.md)。
+
 ## 数据准备
 
 ```text
@@ -213,19 +232,41 @@ $$
 
 最终得分为所有测试样本的平均值，实现见 `sw_dlnet/utils/metrics.py`。
 
+## 持续集成与发布
+
+| 工作流 | 触发条件 | 内容 |
+| --- | --- | --- |
+| [`ci.yml`](.github/workflows/ci.yml) | push 到 `main`、PR、手动 | `lint`（ruff 检查 + 格式检查）、`test`（Ubuntu / Windows × Python 3.10 / 3.12）、`end-to-end`（慢测试 + 在真实样本上训练 2 个 epoch 并上传产物） |
+| [`sample-training.yml`](.github/workflows/sample-training.yml) | 手动触发 | 在 `data/sample/` 上跑完整训练脚本，产物以 artifact 形式保留 90 天 |
+| [`release.yml`](.github/workflows/release.yml) | 推送 `v*` tag | 先跑全量测试，再构建 sdist / wheel 与 `sample-dataset.zip`，自动发布 GitHub Release |
+
+发布新版本只需三步：
+
+```bash
+git tag -a v1.1.0 -m "SW-DLNet v1.1.0"
+git push origin v1.1.0
+```
+
+发布说明由 GitHub 依据提交与 PR 自动生成，版本变更记录见
+[CHANGELOG.md](CHANGELOG.md)。
+
 ## 项目结构
 
 ```text
 SW_DLNet/
+├── .github/workflows/        # CI、手动训练与 tag 发布
 ├── configs/
-│   └── default.yaml          # 数据、输出与三阶段超参
+│   ├── default.yaml          # 数据、输出与三阶段超参
+│   └── sample.yaml           # 30 个样本上的冒烟训练配置
 ├── data/
 │   ├── raw/                  # 原始 CSV（按调制方式分子目录）
-│   └── processed/            # HDF5 缓存、划分索引、归一化统计量
+│   ├── processed/            # HDF5 缓存、划分索引、归一化统计量
+│   └── sample/               # 随仓库提交的 30 个真实样本（测试与 CI 用）
 ├── docs/
 │   ├── architecture.md       # 结构、mask、参数量与兼容性约定
 │   ├── data_format.md        # 数据字段、相位校正、缓存与批处理
-│   └── refactoring.md        # 相对原始实现的改动与等价性验证
+│   ├── refactoring.md        # 相对原始实现的改动与等价性验证
+│   └── testing.md            # 测试数据、用例清单与 CI 任务
 ├── scripts/
 │   ├── train.py              # 训练 / 测试入口
 │   └── visualize_model.py    # 模型摘要
@@ -235,7 +276,10 @@ SW_DLNet/
 │   ├── models/               # 模块与 HybridModel
 │   ├── engine/               # Trainer / Tester
 │   └── utils/                # 损失、指标、工厂、绘图
+├── tests/                    # 54 项 pytest 用例
 ├── assets/                   # README 图片
+├── pyproject.toml            # 依赖、ruff、pytest 配置
+├── CHANGELOG.md
 ├── requirements.txt
 └── README.md
 ```
@@ -247,6 +291,8 @@ SW_DLNet/
 | [docs/architecture.md](docs/architecture.md) | 数据流、各模块结构、参数量、checkpoint 兼容约定 |
 | [docs/data_format.md](docs/data_format.md) | CSV 字段、调制映射、相位校正、缓存文件与划分 |
 | [docs/refactoring.md](docs/refactoring.md) | 目录对照、命名调整、删除的死代码、等价性验证 |
+| [docs/testing.md](docs/testing.md) | 测试数据来源、用例清单、慢标记约定、CI 任务 |
+| [CHANGELOG.md](CHANGELOG.md) | 版本变更记录 |
 
 ## 复现说明
 
@@ -263,7 +309,9 @@ SW_DLNet/
 * 超参外置到 YAML，训练入口支持 `--test-only` 等命令行覆盖；
 * 合并重复的绘图代码，修复报告图标题与 colorbar 句柄问题；
 * 删除从未生效的 CUDA Graph、bf16 判断等死代码；
-* 验证新旧实现权重逐位一致、前向输出误差为 0。
+* 验证新旧实现权重逐位一致、前向输出误差为 0；
+* 提交 30 个真实样本，补齐 54 项 pytest 用例与 `pyproject.toml`；
+* 加入 GitHub Actions：风格检查、多平台测试、真实样本端到端训练、tag 发布。
 
 ## 致谢
 

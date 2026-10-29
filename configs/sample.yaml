@@ -1,0 +1,33 @@
+# Minimal configuration: 30 real CSV files, two epochs, CPU only.
+# Used by the test-suite and by the "Sample training" workflow.
+# Paths are resolved relative to the repository root.
+
+seed: 42
+device: cpu
+batch_size: 8
+
+data:
+  root: data/sample
+  cache: outputs/sample/dataset.h5
+  indices: outputs/sample/indices.pkl
+  stats: outputs/sample/dataset_stats_v3.pkl
+
+output:
+  weights: outputs/sample/weights
+  figures: outputs/sample/figures
+  reports: outputs/sample/reports
+
+stages:
+  - name: Sample
+    epochs: 2
+    early_stop: 2
+    optimizer:
+      type: RAdam
+      lr: 1.0e-4
+      weight_decay: 1.0e-4
+    scheduler:
+      type: onecycle
+      max_lr: 1.0e-3
+      total_steps_epochs: 2
+    criterion:
+      type: mape

@@ -1,0 +1,36 @@
+name: Sample training
+
+# Manual run of the real pipeline on the 30 CSV files bundled in data/sample.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: 1
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  KMP_DUPLICATE_LIB_OK: TRUE
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install CPU PyTorch
+        run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Install the package
+        run: python -m pip install -e .
+      - name: Train on the bundled sample
+        run: python scripts/train.py --config configs/sample.yaml --device cpu
+      - name: Upload weights, figures and metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: sample-training
+          path: outputs/sample
+          if-no-files-found: error
